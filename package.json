@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "@ag-grid-community/client-side-row-model": "^32.3.9",
+    "@ag-grid-community/core": "^32.3.9",
+    "@lottiefiles/dotlottie-react": "^0.17.1",
+    "@react-pdf/renderer": "^4.3.1",
+    "ag-grid-community": "^34.2.0",
+    "ag-grid-react": "^34.2.0",
+    "axios": "^1.9.0",
+    "bullmq": "^5.58.5",
+    "firebase-admin": "^13.4.0",
+    "flatpickr": "^4.6.13",
+    "ioredis": "^5.7.0",
+    "lottie-react": "^2.4.1",
+    "lucide-react": "^0.544.0",
+    "luxon": "^3.7.2",
+    "pdfkit": "^0.17.2",
+    "react-data-table-component": "^7.7.0",
+    "react-datepicker": "^8.3.0",
+    "react-flatpickr": "^4.0.10",
+    "react-sparklines": "^1.7.0",
+    "recharts": "^3.1.2",
+    "redis": "^5.8.2",
+    "styled-components": "^6.1.18",
+    "yet-another-react-lightbox": "^3.25.0"
+  }
+}

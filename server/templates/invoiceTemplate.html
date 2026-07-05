@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nefa Cab Invoice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        @page {
+            size: A4;
+        }
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .no-break {
+                page-break-inside: avoid;
+            }
+        }
+        .pdf-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -10;
+            object-fit: cover;
+        }
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            position: relative; 
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+        @media print {
+            body::before {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+        }
+        .invoice-container {
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            background: transparent;
+            padding-top: 5mm;    
+            padding-bottom: 28mm;  
+            padding-left: 10mm;
+            padding-right: 10mm;
+        }
+        .customer-banner {
+            background: url('{{thankUrl}}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+        }
+        .customer-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 3px;
+            position: relative;
+            z-index: 1;
+        }
+        .thank-you {
+            font-size: 11px;
+            color: white;
+            position: relative;
+            font-weight: bold;
+            z-index: 1;
+        }
+        .fare-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1F1E1A;
+        }
+        .total-fare-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1F1E1A;
+            margin-bottom: 2px;
+        }
+        .stat-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1F1E1A;
+        }
+        .stat-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #1F1E1A;
+        }
+        .payment-info {
+            display: flex;
+            justify-content: space-around;
+            gap: 30px;
+            text-align: center;
+        }
+        .payment-box {
+            flex: 1;
+        }
+        .payment-label {
+            font-size: 9px;
+            color: #1F1E1A;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .payment-amount {
+            font-size: 18px;
+            color: #1F1E1A;
+        }
+        .booking-section {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+        .section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #2E847B;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+        .booking-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            padding: 3px 0;
+        }
+        .booking-label {
+            color: #1F1E1A;
+        }
+        .booking-value {
+            color: #1F1E1A;
+            text-align: right;
+        }
+        .breakup-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 46px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+        .breakup-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #1F1E1A;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+        .breakup-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 12px;
+            font-size: 10px;
+            padding: 3px 0;
+            color: #1F1E1A;
+            align-items: center;
+        }
+        .breakup-label {
+            justify-self: start;
+        }
+        .breakup-center {
+            justify-self: center;
+            text-align: center;
+        }
+        .breakup-value {
+            font-weight: 600;
+            justify-self: end;
+            text-align: right;
+        }
+        .tax-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 12px;
+            font-size: 10px;
+            padding: 3px 0;
+            color: #1F1E1A;
+            align-items: center;
+        }
+        .tax-label {
+            justify-self: start;
+        }
+        .tax-rate {
+            justify-self: center;
+            text-align: center;
+        }
+        .tax-value {
+            text-align: right;
+            font-weight: 600;
+            justify-self: end;
+        }
+        .policy-section {
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+        }
+        .policy-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #1F1E1A;
+            margin-bottom: 8px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        .policy-content {
+            font-size: 10px;
+            line-height: 1.3;
+            color: #1F1E1A;
+        }
+        .policy-content p {
+            margin-bottom: 4px;
+        }
+        .policy-content strong {
+            color: #1F1E1A;
+            font-weight: 600;
+        }
+        .policy-content a {
+            color: #2E847B;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <img class="pdf-bg" src="{{backgroundUrl}}" />
+    <div class="invoice-container">
+        <!-- Customer Banner -->
+        <div class="customer-banner">
+            <div class="customer-name">{{customerName}}</div>
+            <div class="thank-you">Thanks for riding with NEFA CABS</div>
+        </div>
+        <!-- Main Content Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 10px;">
+            <!-- Left Column: Summary and Payment -->
+            <div style="display: flex; flex-direction: column; gap: 20px; padding-top: 20px;">
+                <!-- Total Fare -->
+                <div style="text-align: center;">
+                    <div class="fare-label">Total Fare</div>
+                    <div class="total-fare-amount">₹ {{totalFare}}</div>
+                </div>
+                <!-- Distance and Time -->
+                <div style="text-align: center;">
+                    <div class="stat-row" style="justify-content: center; margin-bottom: 4px;">
+                        <span class="stat-label">Total Distance</span>
+                        <span class="stat-value">: {{actualDistance}} km</span>
+                    </div>
+                    <div class="stat-row" style="justify-content: center;">
+                        <span class="stat-label">Total Ride Time</span>
+                        <span class="stat-value">: {{actualDuration}} mins</span>
+                    </div>
+                </div>
+                <!-- Payment Info -->
+                <div class="payment-info" style="gap: 20px;">
+                    <div class="payment-box">
+                        <div class="payment-label">Wallet Money Deducted</div>
+                        <div class="payment-amount">₹ {{walletDeducted}}</div>
+                    </div>
+                    <div class="payment-box">
+                        <div class="payment-label">Cash Paid</div>
+                        <div class="payment-amount">₹ {{cashPaid}}</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column: Booking Details -->
+            <div>
+                <div class="booking-section" style="height: 100%;">
+                    <div class="section-title">BOOKING DETAILS</div>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <div class="booking-row">
+                            <span class="booking-label">Service Type</span>
+                            <span class="booking-value">{{serviceType}}</span>
+                        </div>
+                        <div class="booking-row">
+                            <span class="booking-label">Trip ID</span>
+                            <span class="booking-value">{{tripId}}</span>
+                        </div>
+                        <div class="booking-row">
+                            <span class="booking-label">Booking Date</span>
+                            <span class="booking-value">{{bookingDate}}</span>
+                        </div>
+                        <div class="booking-row">
+                            <span class="booking-label">Booking Time</span>
+                            <span class="booking-value">{{bookingTime}}</span>
+                        </div>
+                        <div class="booking-row">
+                            <span class="booking-label">Pickup Date</span>
+                            <span class="booking-value">{{pickupDate}}</span>
+                        </div>
+                        <div class="booking-row">
+                            <span class="booking-label">Pickup Time</span>
+                            <span class="booking-value">{{pickupTime}}</span>
+                        </div>
+                        <div class="booking-row">
+                            <span class="booking-label">Booking Email ID</span>
+                            <span class="booking-value">{{passengerEmail}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Fare and Tax Breakup -->
+        <div class="breakup-section" id="breakupSection">
+            <div>
+                <div class="breakup-title">FARE BREAKUP</div>
+                <div id="fareBreakupContent">{{fareBreakupHtml}}</div>
+            </div>
+            <div>
+                <div class="breakup-title">TAX BREAKUP</div>
+                <div id="taxBreakupContent">{{taxBreakupHtml}}</div>
+            </div>
+        </div>
+        <!-- Policy Section -->
+        <div class="policy-section">
+            <div class="policy-title">FARE AND CHARGES POLICY</div>
+            <div class="policy-content">
+                {{farePolicy}}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
